@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from data import Articles
 
 app = Flask(__name__)
@@ -22,6 +22,23 @@ def articles():
 @app.route('/article/<string:id>/')
 def article(id):
     return render_template('article.html', id = id)
+
+@app.route('/playWithForms')
+def playWithForms():
+    return render_template('forms.html')
+
+@app.route('/changePermission', methods=['POST', 'GET'])
+def changePermission():
+    permission = request.form['permission']
+    print "get: " + permission
+    if permission == 'Yes':
+        bpermission = 'No'
+    else:
+        bpermission = 'Yes'
+    print "return: " + bpermission
+    return bpermission
+
+
 
 if __name__ == '__main__':
     app.run()
