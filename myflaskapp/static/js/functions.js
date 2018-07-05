@@ -1,16 +1,6 @@
 $(document).ready(function(){
 
-    //POST method
-    /*
-    $("button").click(function(){
-        $.post("/changePermission",
-        {
-          permission : $("#id1").text()
-        },
-        function(data){
-            $('#id1').text(data).show();
-        });
-    });
+    
 */
 //POST method with ajax
     $("form").on('submit', function(event){
@@ -29,5 +19,7 @@ $(document).ready(function(){
 
         event.preventDefault();
     });
+
+
 
 });

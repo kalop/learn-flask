@@ -25,7 +25,18 @@ def article(id):
 
 @app.route('/playWithForms')
 def playWithForms():
-    return render_template('forms.html')
+    dic = {"key1":1, "key2":0}
+    return render_template('forms.html', data=dic)
+
+@app.route('/changeValue', methods=['POST', 'GET'])
+def changeValue():
+    clau = request.form['valor']
+    accio = request.form['nom']
+    if accio == "revoke":
+        return "0"
+    else:
+        return "1"
+
 
 @app.route('/changePermission', methods=['POST', 'GET'])
 def changePermission():

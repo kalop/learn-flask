@@ -29,4 +29,49 @@
         </tbody>
 
     </table>
+
+    <table class="table">
+        <thead>
+            <th>key</th>
+            <th>value</th>
+            <th>change</th>
+        </thead>
+        <tbody>
+         {% for clau, valor in data.items() %}
+         <tr>
+             <td> {{ clau }} </td>
+             <td id="{{ clau }}"> {{ valor }} </td>
+             <td>
+
+                <button onclick="changeValue(this)" type="button" class="btn btn-danger" value="{{ clau }}" name="revoke">Revoke</button>
+                <button onclick="changeValue(this)" type="button" class="btn btn-success" value="{{ clau }}" name="give">Give</button>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+<script>
+function changeValue(elem){
+    var clau = elem.value;
+    var name = elem.name;
+    console.log("value: "+clau+" name: "+name);
+    $.ajax({
+        data : {
+            valor : clau,
+            nom : name
+        },
+        type : 'POST',
+        url : '/changeValue'
+    })
+    .done(function(data){
+        $('#'+clau).text(data).show();
+    });
+
+}
+</script>
+
+
 {% endblock %}
