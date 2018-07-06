@@ -1,7 +1,6 @@
 $(document).ready(function(){
 
-    
-*/
+
 //POST method with ajax
     $("form").on('submit', function(event){
 

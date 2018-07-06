@@ -40,14 +40,19 @@
          {% for clau, valor in data.items() %}
          <tr>
              <td> {{ clau }} </td>
-             <td id="{{ clau }}"> {{ valor }} </td>
+            {% if valor == "Yes" %}
+                <td id="{{ clau }}" style="background-color: greenyellow" > {{ valor }} </td>
+            {% else %}
+                <td id="{{ clau }}" style="background-color: red"> {{ valor }} </td>
+            {% endif %}
              <td>
-
-                <button onclick="changeValue(this)" type="button" class="btn btn-danger" value="{{ clau }}" name="revoke">Revoke</button>
-                <button onclick="changeValue(this)" type="button" class="btn btn-success" value="{{ clau }}" name="give">Give</button>
-
+                <button onclick="changeValue(this)" type="button" class="btn btn-danger" value="{{ clau }}" >Revoke</button>
+                {% if valor == "Yes" %}
+                    <input  onchange="changeValue(this)" value="{{ clau }}" type="checkbox" checked data-toggle="toggle">
+                {% else %}
+                    <input  onchange="changeValue(this)" value="{{ clau }}" type="checkbox" data-toggle="toggle">
+                {% endif %}
             </td>
-
         </tr>
         {% endfor %}
         </tbody>
@@ -57,17 +62,24 @@
 function changeValue(elem){
     var clau = elem.value;
     var name = elem.name;
-    console.log("value: "+clau+" name: "+name);
+    console.log("value: "+clau);
     $.ajax({
         data : {
-            valor : clau,
-            nom : name
+            valor : clau
         },
         type : 'POST',
         url : '/changeValue'
     })
     .done(function(data){
+
         $('#'+clau).text(data).show();
+        var text = $('#'+clau).text();
+        if (text== "Yes") {
+            document.getElementById(clau).style.backgroundColor = "greenyellow";
+        }else {
+            document.getElementById(clau).style.backgroundColor = "red";
+        }
+
     });
 
 }

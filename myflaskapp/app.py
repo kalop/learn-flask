@@ -6,6 +6,7 @@ app = Flask(__name__)
 app.debug=True
 
 Articles = Articles()
+dic = {"key1":"Yes", "key2":"No"}
 
 @app.route('/')
 def index():
@@ -25,17 +26,19 @@ def article(id):
 
 @app.route('/playWithForms')
 def playWithForms():
-    dic = {"key1":1, "key2":0}
+
     return render_template('forms.html', data=dic)
 
 @app.route('/changeValue', methods=['POST', 'GET'])
 def changeValue():
     clau = request.form['valor']
-    accio = request.form['nom']
-    if accio == "revoke":
-        return "0"
+
+    if dic[clau] == "Yes":
+        dic[clau] = "No"
+        return dic[clau]
     else:
-        return "1"
+        dic[clau] = "Yes"
+        return dic[clau]
 
 
 @app.route('/changePermission', methods=['POST', 'GET'])
