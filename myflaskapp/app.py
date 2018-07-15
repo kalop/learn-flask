@@ -1,15 +1,48 @@
 from flask import Flask, render_template, request
 from data import Articles
+from flask_ldapconn import LDAPConn
+from ldap3 import SUBTREE
+from pprint import pprint
 
 app = Flask(__name__)
 #Reload the server every time something is changed
 app.debug=True
+
+
+##LDAP
+LDAP_SERVER = '172.17.0.2'
+LDAP_PORT = 389
+LDAP_BINDDN = 'cn=admin,dc=planetexpress,dc=com'
+LDAP_SECRET = 'GoodNewsEveryone'
+LDAP_USE_TLS = False
+
+
+app.config['LDAP_SERVER'] = LDAP_SERVER
+app.config['LDAP_PORT'] = LDAP_PORT
+app.config['LDAP_BINDDN'] = LDAP_BINDDN
+app.config['LDAP_SECRET'] = LDAP_SECRET
+app.config['LDAP_USE_TLS'] = LDAP_USE_TLS
+
+ldap = LDAPConn(app)
+
+
+###
 
 Articles = Articles()
 dic = {"key1":"Yes", "key2":"No"}
 
 @app.route('/')
 def index():
+
+    print "#################"
+    ldapc = ldap.connection
+    search_filter = '(objectClass=inetOrgPerson)'
+    attributes = ['cn']
+    base ='ou=people,dc=planetexpress,dc=com'
+    ldapc.search( base, search_filter, SUBTREE, attributes=attributes)
+    pprint(ldapc.response)
+
+
     return render_template('home.html')
 
 @app.route('/about')
