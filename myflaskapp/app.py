@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from data import Articles
 from flask_ldapconn import LDAPConn
-from ldap3 import SUBTREE
+from ldap3 import SUBTREE, MODIFY_REPLACE
 from pprint import pprint
 
 app = Flask(__name__)
@@ -36,12 +36,25 @@ def index():
 
     print "#################"
     ldapc = ldap.connection
-    search_filter = '(objectClass=inetOrgPerson)'
-    attributes = ['cn']
+    search_filter = '(cn=admin_staff)'
+
+    attributes = ['cn','member']
     base ='ou=people,dc=planetexpress,dc=com'
     ldapc.search( base, search_filter, SUBTREE, attributes=attributes)
     pprint(ldapc.response)
 
+
+    newlist =  [{'attributes': {u'member': [u'cn=Hubert J. Farnsworth,ou=people,dc=planetexpress,dc=com',
+        u'cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'], u'cn': [u'admin_staff']}}]
+
+
+
+    newlist =  {'member': [MODIFY_REPLACE,(['cn=Albert Cabre,ou=people,dc=planetexpress,dc=com','cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'])]}
+
+    print ldapc.modify('cn=admin_staff,ou=people,dc=planetexpress,dc=com', newlist)
+
+    ldapc.search( base, search_filter, SUBTREE, attributes=attributes)
+    pprint(ldapc.response)
 
     return render_template('home.html')
 
