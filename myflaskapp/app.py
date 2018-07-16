@@ -44,12 +44,23 @@ def index():
     pprint(ldapc.response)
 
 
-    newlist =  [{'attributes': {u'member': [u'cn=Hubert J. Farnsworth,ou=people,dc=planetexpress,dc=com',
-        u'cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'], u'cn': [u'admin_staff']}}]
+    ####Response:
+#    [{
+#              'attributes': {u'member': [u'cn=Albert Kabre,ou=people,dc=planetexpress,dc=com',
+#                                             u'cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'],
+#                                             u'cn': [u'admin_staff']},
+#               'dn': u'cn=admin_staff,ou=people,dc=planetexpress,dc=com',
+#              'raw_attributes': {u'member': ['cn=Albert Kabre,ou=people,dc=planetexpress,dc=com',
+#                                             'cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'],
+#                                              u'cn': ['admin_staff']},
+#              'raw_dn': 'cn=admin_staff,ou=people,dc=planetexpress,dc=com',
+#              'type': 'searchResEntry'
+#       }]
 
 
 
-    newlist =  {'member': [MODIFY_REPLACE,(['cn=Albert Cabre,ou=people,dc=planetexpress,dc=com','cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'])]}
+
+    newlist =  {'member': [(MODIFY_REPLACE,['cn=Albert Kabre,ou=people,dc=planetexpress,dc=com','cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'])]}
 
     print ldapc.modify('cn=admin_staff,ou=people,dc=planetexpress,dc=com', newlist)
 
