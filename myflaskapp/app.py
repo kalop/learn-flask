@@ -25,49 +25,59 @@ app.config['LDAP_USE_TLS'] = LDAP_USE_TLS
 
 ldap = LDAPConn(app)
 
-
-###
-
 Articles = Articles()
 dic = {"key1":"Yes", "key2":"No"}
 
 @app.route('/')
 def index():
 
+    #testLDAPmodify()
+    testLDAPcreate()
+
+    return render_template('home.html')
+
+def testLDAPcreate():
+    attributes=  dict(
+        uid= 'test5.user',
+        givenName= 'Test5',
+        sn= 'User',
+        #cn= 'Test4 User',
+        mail= 'test.user@ilimit.net'
+    )
+
+    ldapc = ldap.connection
+    base ='cn=Test5 user,ou=people,dc=planetexpress,dc=com'
+    filter = [ 'inetOrgPerson', 'person', 'top', 'organizationalPerson']
+
+    #print ldapc.add(dn=base, object_class=filter, attributes=attributes, controls=None)
+
+    #add passw
+    user_dn = 'cn=Test4 user,ou=people,dc=planetexpress,dc=com'
+    ldapc.extend.microsoft.unlock_account(user=user_dn)
+    #ldapc.modify(user_dn, {'lockoutTime': [(MODIFY_REPLACE, ['0'])]}, controls=None)
+    print ldapc.extend.microsoft.modify_password(user=user_dn, new_password='testpass', old_password=None)
+    enable_account = {"userAccountControl": (MODIFY_REPLACE, [512])}
+    print c.modify(user_dn=user_dn, changes=enable_account)
+
+
+def testLDAPmodify():
     print "#################"
+    #docker run --privileged -d -p 389:389 rroemhild/test-openldap
+
     ldapc = ldap.connection
     search_filter = '(cn=admin_staff)'
 
     attributes = ['cn','member']
     base ='ou=people,dc=planetexpress,dc=com'
     ldapc.search( base, search_filter, SUBTREE, attributes=attributes)
-    pprint(ldapc.response)
+    pprint(ldapc.response)#print users
 
-
-    ####Response:
-#    [{
-#              'attributes': {u'member': [u'cn=Albert Kabre,ou=people,dc=planetexpress,dc=com',
-#                                             u'cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'],
-#                                             u'cn': [u'admin_staff']},
-#               'dn': u'cn=admin_staff,ou=people,dc=planetexpress,dc=com',
-#              'raw_attributes': {u'member': ['cn=Albert Kabre,ou=people,dc=planetexpress,dc=com',
-#                                             'cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'],
-#                                              u'cn': ['admin_staff']},
-#              'raw_dn': 'cn=admin_staff,ou=people,dc=planetexpress,dc=com',
-#              'type': 'searchResEntry'
-#       }]
-
-
-
-
-    newlist =  {'member': [(MODIFY_REPLACE,['cn=Albert Kabre,ou=people,dc=planetexpress,dc=com','cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'])]}
-
+    #modificar membre
+    newlist =  {'member': [(MODIFY_REPLACE,['cn=Albert Cabrerizo,ou=people,dc=planetexpress,dc=com','cn=Hermes Conrad,ou=people,dc=planetexpress,dc=com'])]}
     print ldapc.modify('cn=admin_staff,ou=people,dc=planetexpress,dc=com', newlist)
 
     ldapc.search( base, search_filter, SUBTREE, attributes=attributes)
     pprint(ldapc.response)
-
-    return render_template('home.html')
 
 @app.route('/about')
 def about():
