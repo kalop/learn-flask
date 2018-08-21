@@ -58,7 +58,29 @@
         </tbody>
 
     </table>
+
+
+    <form action="/playWithForms" method="post">
+        {{ form.csrf_token }}
+        {{ form.dt(class='datepicker') }}
+        {{ form.hidden_tag() }}
+        <input type="submit"/>
+    </form>
+
+
 <script>
+
+
+$(".datepicker").datepicker( {
+    format: "mm-yyyy",
+    startView: "months",
+    minViewMode: "months"
+});
+
+
+
+
+/*
 function changeValue(elem){
     var clau = elem.value;
     var name = elem.name;
@@ -82,7 +104,7 @@ function changeValue(elem){
 
     });
 
-}
+}*/
 </script>
 
 

@@ -3,6 +3,8 @@ from data import Articles
 from flask_ldapconn import LDAPConn
 from ldap3 import SUBTREE, MODIFY_REPLACE
 from pprint import pprint
+from flask_wtf import Form
+from wtforms.fields.html5 import DateField
 
 app = Flask(__name__)
 #Reload the server every time something is changed
@@ -22,6 +24,7 @@ app.config['LDAP_PORT'] = LDAP_PORT
 app.config['LDAP_BINDDN'] = LDAP_BINDDN
 app.config['LDAP_SECRET'] = LDAP_SECRET
 app.config['LDAP_USE_TLS'] = LDAP_USE_TLS
+app.config['SECRET_KEY'] = 'secret'
 
 ldap = LDAPConn(app)
 
@@ -32,7 +35,7 @@ dic = {"key1":"Yes", "key2":"No"}
 def index():
 
     #testLDAPmodify()
-    testLDAPcreate()
+    #testLDAPcreate()
 
     return render_template('home.html')
 
@@ -91,10 +94,17 @@ def articles():
 def article(id):
     return render_template('article.html', id = id)
 
-@app.route('/playWithForms')
-def playWithForms():
 
-    return render_template('forms.html', data=dic)
+class ExampleForm(Form):
+    dt = DateField('DatePicker', format='%Y-%m-%d')
+
+@app.route('/playWithForms', methods=['POST','GET'])
+def playWithForms():
+    form = ExampleForm()
+    if form.validate_on_submit():
+        print 'DATE:'
+        print form.dt.data.strftime('%Y-%m-%d')
+    return render_template('forms.html', data=dic,form=form)
 
 @app.route('/changeValue', methods=['POST', 'GET'])
 def changeValue():

@@ -1,7 +1,9 @@
 $(document).ready(function(){
 
 
+
 //POST method with ajax
+/*
     $("form").on('submit', function(event){
 
         console.log("Value: " + $("#id1").text())
@@ -19,6 +21,6 @@ $(document).ready(function(){
         event.preventDefault();
     });
 
-
+*/
 
 });
