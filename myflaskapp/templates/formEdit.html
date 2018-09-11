@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+    <h1>Edit</h1>
+
+    <form action="{{ action }}" method="post" autocomplete="on">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                {{ form.username(class="form-control" ,type="text", placeholder="UserName") }}
+            </div>
+            <div class="form-group">
+                {{ form.email(class="form-control" ,type="text", placeholder="Email") }}
+            </div>
+            {{ form.hidden_tag() }}
+            <input class="btn btn-primary" type="submit" />
+
+        </form>
+<script>
+
+
+
+
+</script>
+
+
+{% endblock %}
