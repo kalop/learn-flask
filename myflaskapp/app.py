@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
 import wtforms
+from wtforms import SelectMultipleField
 from data import Articles
 from flask_ldapconn import LDAPConn
 from ldap3 import SUBTREE, MODIFY_REPLACE
@@ -44,6 +45,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    #multi = db.Column(db.Text)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -55,7 +57,7 @@ class UserForm(FlaskForm):
     id = wtforms.HiddenField()
     username = wtforms.TextField('username:')
     email = wtforms.TextField('email:')
-
+    multi = wtforms.SelectMultipleField(u'Multi', coerce=unicode)
 
 
 
@@ -152,11 +154,14 @@ def listUsers():
 @app.route('/editUsers/<pk>', methods=['POST','GET'])
 def editForms(pk=None):
     obj = User.query.filter_by(id=pk).first() if pk else User()
-    #obj = User.query.filter(User.username==pk).first() if pk else User()
     form = UserForm(obj=obj)
+
+    form.multi.choices = [('a','a'),('b','b'),('c','c')]
+    if pk:
+        form.multi.data =['a','b']
     if form.validate_on_submit():
         form.populate_obj(obj)
-        print obj.id
+        print form.multi.data
         objAux = User.query.filter_by(id=obj.id).first()
         objAux.username = obj.username
         objAux.email = obj.email
