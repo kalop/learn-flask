@@ -10,7 +10,7 @@ app.debug=True
 
 
 ##LDAP
-LDAP_SERVER = '172.17.0.2'
+LDAP_SERVER = '172.17.0.3'
 LDAP_PORT = 389
 LDAP_BINDDN = 'cn=admin,dc=planetexpress,dc=com'
 LDAP_SECRET = 'GoodNewsEveryone'
@@ -53,11 +53,12 @@ def testLDAPcreate():
 
     #add passw
     user_dn = 'cn=Test4 user,ou=people,dc=planetexpress,dc=com'
-    ldapc.extend.microsoft.unlock_account(user=user_dn)
+    print ldapc.extend.standard.modifyPassword.ModifyPassword(ldapc, user_dn, 'passw')
+    #ldapc.extend.microsoft.unlock_account(user=user_dn)
     #ldapc.modify(user_dn, {'lockoutTime': [(MODIFY_REPLACE, ['0'])]}, controls=None)
-    print ldapc.extend.microsoft.modify_password(user=user_dn, new_password='testpass', old_password=None)
-    enable_account = {"userAccountControl": (MODIFY_REPLACE, [512])}
-    print c.modify(user_dn=user_dn, changes=enable_account)
+    #print ldapc.extend.microsoft.modify_password(user=user_dn, new_password='testpass', old_password=None)
+    #enable_account = {"userAccountControl": (MODIFY_REPLACE, [512])}
+    #print ldapc.modify(user_dn=user_dn, changes=enable_account)
 
 
 def testLDAPmodify():
