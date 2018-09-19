@@ -1,10 +1,18 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+from flask_wtf import FlaskForm
+import wtforms
+from wtforms import SelectMultipleField
 from data import Articles
 from flask_ldapconn import LDAPConn
 from ldap3 import SUBTREE, MODIFY_REPLACE
 from pprint import pprint
+from flask_wtf import Form
+from wtforms.fields.html5 import DateField
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(app)
 #Reload the server every time something is changed
 app.debug=True
 
@@ -22,18 +30,48 @@ app.config['LDAP_PORT'] = LDAP_PORT
 app.config['LDAP_BINDDN'] = LDAP_BINDDN
 app.config['LDAP_SECRET'] = LDAP_SECRET
 app.config['LDAP_USE_TLS'] = LDAP_USE_TLS
+app.config['SECRET_KEY'] = 'secret'
 
 ldap = LDAPConn(app)
 
 Articles = Articles()
 dic = {"key1":"Yes", "key2":"No"}
 
+
+
+###Models
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    #multi = db.Column(db.Text)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+
+
+###forms
+class UserForm(FlaskForm):
+    id = wtforms.HiddenField()
+    username = wtforms.TextField('username:')
+    email = wtforms.TextField('email:')
+    multi = wtforms.SelectMultipleField(u'Multi', coerce=unicode)
+
+
+
 @app.route('/')
 def index():
 
     #testLDAPmodify()
-    testLDAPcreate()
-
+    #testLDAPcreate()
+    #db.create_all()
+    #admin = User(username='albert', email='albert@example.com')
+    #guest = User(username='emma', email='emma@example.com')
+    #db.session.add(admin)
+    #db.session.add(guest)
+    #db.session.commit()
     return render_template('home.html')
 
 def testLDAPcreate():
@@ -92,10 +130,45 @@ def articles():
 def article(id):
     return render_template('article.html', id = id)
 
-@app.route('/playWithForms')
-def playWithForms():
 
-    return render_template('forms.html', data=dic)
+class ExampleForm(Form):
+    dt = DateField('DatePicker', format='%Y-%m-%d')
+
+@app.route('/playWithForms', methods=['POST','GET'])
+def playWithForms():
+    form = ExampleForm()
+    if form.validate_on_submit():
+        print 'DATE:'
+        print form.dt.data.strftime('%Y-%m-%d')
+    return render_template('forms.html', data=dic,form=form)
+
+@app.route('/listUsers')
+def listUsers():
+    #if form.validate_on_submit():
+    users = User.query.all()
+    data = dict()
+    for user in users:
+        data[user.username] = [user.email, user.id]
+    return render_template('list.html', endpoint_edit='editForms', data=data)
+
+@app.route('/editUsers', methods=['POST','GET'])
+@app.route('/editUsers/<pk>', methods=['POST','GET'])
+def editForms(pk=None):
+    obj = User.query.filter_by(id=pk).first() if pk else User()
+    form = UserForm(obj=obj)
+
+    form.multi.choices = [('a','a'),('b','b'),('c','c')]
+    if pk:
+        form.multi.data =['a','b']
+    if form.validate_on_submit():
+        form.populate_obj(obj)
+        print form.multi.data
+        objAux = User.query.filter_by(id=obj.id).first()
+        objAux.username = obj.username
+        objAux.email = obj.email
+        db.session.commit()
+        return redirect(url_for('listUsers'))
+    return render_template('formEdit.html', form=form, action='/editUsers')
 
 @app.route('/changeValue', methods=['POST', 'GET'])
 def changeValue():
